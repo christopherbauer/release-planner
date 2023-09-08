@@ -1,0 +1,27 @@
+{
+	"name": "release-planner",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"start:application": "LOG_LEVEL=info ts-node index.ts",
+		"start": "npm run start:application",
+		"start:debug": "LOG_LEVEL=debug ts-node index.ts",
+		"debug": "npm run start:debug",
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"dependencies": {
+		"@octokit/rest": "^20.0.1",
+		"@octokit/types": "^11.1.0",
+		"dotenv": "^16.3.1",
+		"simple-git": "^3.19.1",
+		"winston": "^3.10.0",
+		"winston-daily-rotate-file": "^4.7.1"
+	},
+	"devDependencies": {
+		"ts-node": "^10.9.1"
+	}
+}
