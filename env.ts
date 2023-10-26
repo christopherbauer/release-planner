@@ -1,4 +1,4 @@
-import { DotenvConfigOutput, config } from "dotenv";
+import { config } from "dotenv";
 import logger from "./logger";
 
 const parsedEnv = config();
@@ -12,7 +12,10 @@ const env = {
 	GITHUB_REPOSITORY: parsedEnv.parsed!.GITHUB_REPOSITORY,
 	PATH_TO_LOCAL_REPOSITORY: parsedEnv.parsed!.PATH_TO_LOCAL_REPOSITORY,
 	TICKET_REGEX: parsedEnv.parsed!.TICKET_REGEX,
+	START_TAG: parsedEnv.parsed?.START_TAG,
+	END_TAG: parsedEnv.parsed?.END_TAG,
+	JIRA_URL_BASE: parsedEnv.parsed?.JIRA_URL_BASE,
 };
-logger.debug(env);
+logger.info(env);
 
 export default env;

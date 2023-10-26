@@ -1,6 +1,7 @@
 import { simpleGit, SimpleGit, SimpleGitOptions } from "simple-git";
 import { Range } from "./types";
 import logger from "../logger";
+import env from "../env";
 
 const getGit = (targetRepo: string) => {
 	const options: Partial<SimpleGitOptions> = {
@@ -23,22 +24,26 @@ const getReleaseTagsInfo: (
 		throw `Fatal Error: Path "${targetRepo}" is not a repo`;
 	}
 
-	const tags = await git.tags((err, data) => {
-		if (err) {
-			logger.error(err);
+	if (env.START_TAG && env.END_TAG) {
+		return { target: env.END_TAG, previous: env.START_TAG };
+	} else {
+		const tags = await git.tags((err, data) => {
+			if (err) {
+				logger.error(err);
+			}
+			return data;
+		});
+
+		const all = tags.all;
+		logger.debug(tags);
+		if (all.length - (offset || 0) < 2) {
+			throw "Fatal Error: Not enough tags to compare versions";
 		}
-		return data;
-	});
+		const target = all[all.length - (1 + (offset ?? 0))];
+		const previous = all[all.length - (2 + (offset ?? 0))];
 
-	const all = tags.all;
-	logger.debug(tags);
-	if (all.length - (offset || 0) < 2) {
-		throw "Fatal Error: Not enough tags to compare versions";
+		return { target, previous };
 	}
-	const target = all[all.length - (1 + (offset || 0))];
-	const previous = all[all.length - (2 + (offset || 0))];
-
-	return { target, previous };
 };
 
 const getCommitsBetween = async (

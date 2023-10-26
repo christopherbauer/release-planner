@@ -1,4 +1,6 @@
+export type TicketListDetails = { tickets: string[]; urls?: string[] };
 export type ReleaseDetails = {
+	ticketList: TicketListDetails;
 	commits: string[];
 	pullRequestDetails: PullRequestDetail[];
 };

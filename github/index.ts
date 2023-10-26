@@ -3,7 +3,7 @@ import {
 	Credentials,
 	PullRequestDetails as FullPullRequestDetail,
 } from "./types";
-import { PullRequestDetail, ReleaseDetails } from "../types";
+import { PullRequestDetail, ReleaseDetails, TicketListDetails } from "../types";
 import logger from "../logger";
 import env from "../env";
 const ticketRegex = new RegExp(env.TICKET_REGEX);
@@ -109,5 +109,19 @@ export const getReleaseDetails: (
 			i++;
 		}
 	}
-	return { commits: commitHashes, pullRequestDetails: allPullRequestDetails };
+	const listOfTickets = allPullRequestDetails.flatMap((prd) => prd.tickets);
+	const ticketList: TicketListDetails = {
+		tickets: listOfTickets,
+		urls: [],
+	};
+	if (env.JIRA_URL_BASE !== undefined) {
+		ticketList.urls = listOfTickets.map(
+			(ticket) => `${env.JIRA_URL_BASE}/browse/${ticket}`
+		);
+	}
+	return {
+		commits: commitHashes,
+		ticketList: ticketList,
+		pullRequestDetails: allPullRequestDetails,
+	};
 };
