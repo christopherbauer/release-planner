@@ -109,7 +109,9 @@ export const getReleaseDetails: (
 			i++;
 		}
 	}
-	const listOfTickets = allPullRequestDetails.flatMap((prd) => prd.tickets);
+	const listOfTickets = allPullRequestDetails
+		.flatMap((prd) => prd.tickets)
+		.filter((ticket, idx, arr) => onlyUnique(ticket, idx, arr));
 	const ticketList: TicketListDetails = {
 		tickets: listOfTickets,
 		urls: [],
