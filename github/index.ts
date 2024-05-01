@@ -7,8 +7,39 @@ import { PullRequestDetail, ReleaseDetails, TicketListDetails } from "../types";
 import logger from "../logger";
 import env from "../env";
 const ticketRegex = new RegExp(env.TICKET_REGEX);
+const getPullRequestsForPeriod = (
+	personalAccessToken: string,
+	owner: string,
+	repository: string,
+	dateStart: Date,
+	dateEnd: Date
+) => {
+	const octokit = new Octokit({
+		auth: personalAccessToken,
+		userAgent: "release-planner v0.0.1-beta",
+		previews: ["jean-grey", "symmetra"],
+		timeZone: "America/New_York",
+		baseUrl: "https://api.github.com",
 
-const getPullRequestsFor = (
+		log: {
+			debug: logger.debug,
+			info: logger.info,
+			warn: logger.info,
+			error: logger.error,
+		},
+		request: {
+			agent: undefined,
+			fetch: undefined,
+			timeout: 0,
+		},
+	});
+	return octokit.paginate(
+		`GET /repos/{owner}/{repo}/pulls`,
+		{ owner: owner, repo: repository },
+		(response) => response.data
+	);
+};
+const getPullRequestsForCommit = (
 	personalAccessToken: string,
 	owner: string,
 	repository: string,
@@ -45,7 +76,12 @@ export const getPullRequestDetails: (
 	commit: string
 ) => Promise<FullPullRequestDetail[]> = async (credentials, commit) => {
 	const { secret, owner, repository } = credentials;
-	const pulls = await getPullRequestsFor(secret, owner, repository, commit);
+	const pulls = await getPullRequestsForCommit(
+		secret,
+		owner,
+		repository,
+		commit
+	);
 
 	return pulls.map((pull) => {
 		const { id, number, body, issue_url, title } = pull;
